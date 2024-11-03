@@ -1,37 +1,14 @@
-# Build stage
-FROM golang:1.23.2-alpine3.20 AS builder
+ARG GO_VERSION=1
+FROM golang:${GO_VERSION}-bookworm as builder
 
-# Install git and build dependencies
-RUN apk add --no-cache git build-base
-
-# Set working directory
-WORKDIR /app
-
-# Copy go mod and sum files
+WORKDIR /usr/src/app
 COPY go.mod go.sum ./
-
-# Download dependencies
-RUN go mod download
-
-# Copy source code
+RUN go mod download && go mod verify
 COPY . .
+RUN go build -v -o /run-app .
 
-# Build the application from the correct path
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/http/server.go
 
-# Final stage
-FROM alpine:3.19
+FROM debian:bookworm
 
-# Install CA certificates for HTTPS
-RUN apk --no-cache add ca-certificates
-
-WORKDIR /root/
-
-# Copy the binary from builder
-COPY --from=builder /app/main .
-
-# Expose the port the app runs on
-EXPOSE 8080
-
-# Command to run the application
-CMD ["./main"]
+COPY --from=builder /run-app /usr/local/bin/
+CMD ["run-app"]
