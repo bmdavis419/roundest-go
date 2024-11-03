@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"log"
+	"math"
 	"net/http"
 	"roundest-go/db"
 	"sort"
@@ -167,8 +167,8 @@ func main() {
 					var winPercentage, lossPercentage float64
 
 					if totalVotes > 0 {
-						winPercentage = float64(pokemon.UpVotes) / float64(totalVotes) * 100
-						lossPercentage = float64(pokemon.DownVotes) / float64(totalVotes) * 100
+						winPercentage = math.Round((float64(pokemon.UpVotes)/float64(totalVotes)*100)*100) / 100
+						lossPercentage = math.Round((float64(pokemon.DownVotes)/float64(totalVotes)*100)*100) / 100
 					}
 
 					results[i] = Result{
@@ -182,10 +182,6 @@ func main() {
 						LossPercentage: lossPercentage,
 					}
 				}
-
-				fmt.Println(results[0].UpVotes)
-				fmt.Println(results[0].TotalVotes)
-				fmt.Println(results[0].WinPercentage)
 
 				sort.Slice(results, func(i, j int) bool {
 					// If win percentages are equal
