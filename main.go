@@ -144,7 +144,7 @@ func main() {
 			Type: graphql.NewList(pokemonType),
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				var pokemon []Pokemon
-				err := db.Select(&pokemon, "SELECT name, id, up_votes, down_votes, inserted_at, updated_at FROM pokemon ORDER BY up_votes DESC")
+				err := db.Select(&pokemon, "SELECT name, id, up_votes, down_votes, inserted_at, updated_at FROM pokemon WHERE id < 1025 ORDER BY up_votes DESC")
 				if err != nil {
 					return nil, err
 				}
@@ -155,7 +155,7 @@ func main() {
 			Type: graphql.NewList(resultType),
 			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 				var pokemon []Pokemon
-				err := db.Select(&pokemon, "SELECT name, id, dex_id, up_votes, down_votes  FROM pokemon ORDER BY up_votes DESC")
+				err := db.Select(&pokemon, "SELECT name, id, dex_id, up_votes, down_votes FROM pokemon WHERE id < 1025 ORDER BY up_votes DESC")
 				if err != nil {
 					return nil, err
 				}
@@ -209,7 +209,7 @@ func main() {
 
 				err := db.Select(&pokemon, `
 				SELECT name, id, dex_id, up_votes, down_votes, inserted_at, updated_at FROM pokemon
-                    ORDER BY RANDOM() 
+                    WHERE id < 1025 ORDER BY RANDOM() 
                     LIMIT 2
                 `)
 				if err != nil {
